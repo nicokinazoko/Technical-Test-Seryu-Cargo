@@ -1,12 +1,18 @@
 import { pool } from './config/db.js';
 
-const getDrivers = async () => {
-  try {
-    const result = await pool.query('SELECT * FROM public.drivers');
-    console.log('Drivers:', result.rows);
-  } catch (err) {
-    console.error('Error querying drivers:', err);
-  }
-};
+import express from 'express';
 
-getDrivers();
+import SalaryRoutes from './route/salary.routes.js';
+
+const app = express();
+
+app.use(express.json());
+
+app.use('/v1', SalaryRoutes);
+
+app.get('/', (req, res) => {
+  console.log('masuk');
+  res.send('hello world');
+});
+
+app.listen(3000);
