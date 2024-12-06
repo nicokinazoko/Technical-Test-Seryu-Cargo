@@ -4,6 +4,9 @@
 ## Description
 This project for techincal test on Seryu Cargo
 
+- **Node.js**: v22.11.0 or higher
+- **PostgreSQL**: 17.2 or higher
+
 ## Installation
 
 1. **Clone the repository:**
