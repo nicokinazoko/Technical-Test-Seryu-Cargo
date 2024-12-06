@@ -11,7 +11,9 @@ export default [
     rules: {
       'no-unused-vars': 'error',
     },
+    env: {
+      node: true,
+    },
   },
   pluginJs.configs.recommended,
 ];
-
