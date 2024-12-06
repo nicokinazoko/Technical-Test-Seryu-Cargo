@@ -95,7 +95,7 @@ async function GetAllShipmentCosts({ month, year, driver_code }) {
     };
   } catch (error) {
     console.error('Error querying GetAllShipmentCosts:', error.stack);
-    throw new Error('Failed to retrieve shipment costs.');
+    throw new Error(`Error querying GetAllShipmentCosts: ${error.message}`);
   }
 }
 
