@@ -9,7 +9,7 @@ This project for techincal test on Seryu Cargo
 1. **Clone the repository:**
 
    ```bash
-   git clone [git@github.com:nicokinazoko/Technical-Test-Seryu-Cargo.git] https://github.com/nicokinazoko/Technical-Test-Seryu-Cargo.git
+   git clone https://github.com/nicokinazoko/Technical-Test-Seryu-Cargo.git
    ```
 2. **Navigate to the project folder:**
    ```bash
