@@ -3,13 +3,6 @@ import { pool } from '../config/db.js';
 async function GetAllShipments({ month, year, status }) {
   try {
     let shipments;
-    if (!month) {
-      return res.status(400).send({ error: 'Filter month is required' });
-    }
-
-    if (!year) {
-      return res.status(400).send({ error: 'Filter year is required' });
-    }
 
     const paramsFilterShipment = [];
     let paramIndex = 1;
@@ -26,7 +19,6 @@ async function GetAllShipments({ month, year, status }) {
       paramsFilterShipment.push(year);
       paramIndex++;
     }
-      
 
     shipments = await pool.query(queryGetAllShipments, paramsFilterShipment);
 
@@ -36,7 +28,8 @@ async function GetAllShipments({ month, year, status }) {
     }));
     return shipments.rows;
   } catch (error) {
-    console.log('Error querying GetAllShipments:', error);
+    console.error('Error querying GetAllShipments:', error.stack);
+    throw new Error(`Error querying GetAllShipments: ${error.message}`);
   }
 }
 

@@ -43,8 +43,8 @@ async function GetAllDrivers({ driver_code, name, page_size, current }) {
     const drivers = await pool.query(query, paramsFilterDriver);
     return { drivers: drivers.rows, totalRowCount };
   } catch (error) {
-    console.error('Error querying GetAllDrivers:', error);
-    throw new Error('Error from GetAllDrivers : ', error);
+    console.error('Error querying GetAllDrivers:', error.stack);
+    throw new Error('Error from GetAllDrivers : ', error.message);
   }
 }
 

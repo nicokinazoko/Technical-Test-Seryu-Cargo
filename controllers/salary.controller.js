@@ -41,9 +41,9 @@ async function GetDriverSalaryList(req, res) {
 
     res.json(driverSalaries);
   } catch (error) {
-    console.log(error);
+    console.error(`Error get driver salary list : ${error.stack}`);
     return res
-      .status(400)
+      .status(500)
       .send({ error: `Error get driver salary list :${error.message} ` });
   }
 }
