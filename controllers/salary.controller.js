@@ -1,7 +1,9 @@
-import { pool } from '../config/db.js';
 import { GetAllListDrivers } from '../services/salary.service.js';
 import { GetAllDriverSalaries } from '../models/salary.model.js';
 import { GetAllDrivers } from '../models/driver.model..js';
+import { GetAllDriverAttendances } from '../models/driverAttendance.model.js';
+import { GetVariableConfig } from '../models/variableConfig.model.js';
+import { GetAllShipmentCosts } from '../models/shipmentCost.model.js';
 
 async function GetDriverSalaryList(req, res) {
   const { month, year, page_size, current, driver_code, status, name } =
@@ -24,19 +26,60 @@ async function GetDriverSalaryList(req, res) {
     current,
   });
 
-  if (drivers && drivers.length && totalRowCount >= 0) {
+  if (drivers && drivers.length) {
     for (const driver of drivers) {
+      const driverAttendances = await GetAllDriverAttendances({
+        driver_code: driver.driver_code,
+        month,
+        year,
+      });
+
+      const variableConfig = await GetVariableConfig();
+      const monthlyAttendanceSalary =
+        variableConfig &&
+        variableConfig.rows &&
+        variableConfig.rows.length &&
+        variableConfig.rows[0] &&
+        variableConfig.rows[0].value;
+
+      const totalAttendanceSalary =
+        driverAttendances.totalRowCount * monthlyAttendanceSalary;
+
+      const {
+        total_shipment_cost_pending,
+        total_shipment_cost_confirmed,
+        total_shipment_cost_paid,
+      } = await GetAllShipmentCosts({
+        driver_code: driver.driver_code,
+        month,
+        year,
+      });
+
+      const totalSalary =
+        (total_shipment_cost_pending ? +total_shipment_cost_pending : 0) +
+        (total_shipment_cost_confirmed ? +total_shipment_cost_confirmed : 0) +
+        (total_shipment_cost_paid ? +total_shipment_cost_paid : 0) +
+        totalAttendanceSalary;
+
       dataListDriverSalaries.push({
         driver_code: driver.driver_code,
         name: driver.name,
+        total_pending: total_shipment_cost_pending
+          ? +total_shipment_cost_pending
+          : 0,
+        total_confirmed: total_shipment_cost_confirmed
+          ? +total_shipment_cost_confirmed
+          : 0,
+        total_paid: total_shipment_cost_paid ? +total_shipment_cost_paid : 0,
+        total_attendance_salary: totalAttendanceSalary,
+        total_salary: totalSalary,
       });
-      console.log(driver.name);
     }
   }
 
   res.json({
     data: dataListDriverSalaries,
-    total_row: totalRowCount,
+    total_row: totalRowCount ? totalRowCount : 0,
     current: +current,
     page_size: +page_size,
   });
