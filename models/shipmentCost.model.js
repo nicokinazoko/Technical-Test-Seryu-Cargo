@@ -7,7 +7,7 @@ async function GetAllShipmentCosts({ month, year, driver_code }) {
 
     let query = `
       SELECT * FROM public.shipment_costs shipment_cost 
-      JOIN shipments shipment 
+      LEFT JOIN shipments shipment 
       ON shipment_cost.shipment_no = shipment.shipment_no 
       WHERE shipment.shipment_status != 'CANCELLED'
     `;
@@ -15,7 +15,7 @@ async function GetAllShipmentCosts({ month, year, driver_code }) {
     const baseTotalCostQuery = `
       SELECT COALESCE(SUM(shipment_cost.total_costs), 0) AS total_cost
       FROM public.shipment_costs shipment_cost 
-      JOIN shipments shipment 
+      LEFT JOIN shipments shipment 
       ON shipment_cost.shipment_no = shipment.shipment_no 
       WHERE shipment.shipment_status != 'CANCELLED'
     `;
@@ -23,7 +23,7 @@ async function GetAllShipmentCosts({ month, year, driver_code }) {
     let queryTotalShipment = `
       SELECT COALESCE(COUNT(DISTINCT shipment_cost.shipment_no), 0) AS total_shipment
       FROM public.shipment_costs shipment_cost 
-      JOIN shipments shipment 
+      LEFT JOIN shipments shipment 
       ON shipment_cost.shipment_no = shipment.shipment_no 
       WHERE shipment.shipment_status != 'CANCELLED'
     `;
