@@ -1,5 +1,4 @@
 import { GetAllListDrivers } from '../services/salary.service.js';
-import { GetAllDriverSalaries } from '../models/salary.model.js';
 import { GetAllDrivers } from '../models/driver.model..js';
 import { GetAllDriverAttendances } from '../models/driverAttendance.model.js';
 import { GetVariableConfig } from '../models/variableConfig.model.js';
