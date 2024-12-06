@@ -1,87 +1,51 @@
-import { GetAllListDrivers } from '../services/salary.service.js';
-import { GetAllDrivers } from '../models/driver.model..js';
-import { GetAllDriverAttendances } from '../models/driverAttendance.model.js';
-import { GetVariableConfig } from '../models/variableConfig.model.js';
-import { GetAllShipmentCosts } from '../models/shipmentCost.model.js';
+import { GetAllDriverSalaries } from '../services/salary.service.js';
 
 async function GetDriverSalaryList(req, res) {
-  const { month, year, page_size, current, driver_code, status, name } =
-    req.query;
+  try {
+    const { month, year, page_size, current, driver_code, status, name } =
+      req.query;
 
-  if (!month) {
-    return res.status(400).send({ error: 'Filter month is required' });
-  }
+    if (!month) {
+      return res.status(400).send({ error: 'Filter month is required' });
+    }
 
-  if (!year) {
-    return res.status(400).send({ error: 'Filter year is required' });
-  }
+    if (!year) {
+      return res.status(400).send({ error: 'Filter year is required' });
+    }
+    const currentPage = +current;
+    const limit = +page_size;
 
-  const dataListDriverSalaries = [];
-
-  const { drivers, totalRowCount } = await GetAllDrivers({
-    driver_code,
-    name,
-    page_size,
-    current,
-  });
-
-  if (drivers && drivers.length) {
-    for (const driver of drivers) {
-      const driverAttendances = await GetAllDriverAttendances({
-        driver_code: driver.driver_code,
-        month,
-        year,
-      });
-
-      const variableConfig = await GetVariableConfig();
-      const monthlyAttendanceSalary =
-        variableConfig &&
-        variableConfig.rows &&
-        variableConfig.rows.length &&
-        variableConfig.rows[0] &&
-        variableConfig.rows[0].value;
-
-      const totalAttendanceSalary =
-        driverAttendances.totalRowCount * monthlyAttendanceSalary;
-
-      const {
-        total_shipment_cost_pending,
-        total_shipment_cost_confirmed,
-        total_shipment_cost_paid,
-      } = await GetAllShipmentCosts({
-        driver_code: driver.driver_code,
-        month,
-        year,
-      });
-
-      const totalSalary =
-        (total_shipment_cost_pending ? +total_shipment_cost_pending : 0) +
-        (total_shipment_cost_confirmed ? +total_shipment_cost_confirmed : 0) +
-        (total_shipment_cost_paid ? +total_shipment_cost_paid : 0) +
-        totalAttendanceSalary;
-
-      dataListDriverSalaries.push({
-        driver_code: driver.driver_code,
-        name: driver.name,
-        total_pending: total_shipment_cost_pending
-          ? +total_shipment_cost_pending
-          : 0,
-        total_confirmed: total_shipment_cost_confirmed
-          ? +total_shipment_cost_confirmed
-          : 0,
-        total_paid: total_shipment_cost_paid ? +total_shipment_cost_paid : 0,
-        total_attendance_salary: totalAttendanceSalary,
-        total_salary: totalSalary,
+    if (currentPage <= 0) {
+      return res.status(400).json({
+        error:
+          'Invalid page number. Page must be a positive integer and more than one',
       });
     }
-  }
 
-  res.json({
-    data: dataListDriverSalaries,
-    total_row: totalRowCount ? totalRowCount : 0,
-    current: +current,
-    page_size: +page_size,
-  });
+    if (limit <= 0) {
+      return res.status(400).json({
+        error:
+          'Invalid total page. Total page must be a positive integer and more than one',
+      });
+    }
+
+    const driverSalaries = await GetAllDriverSalaries({
+      month,
+      year,
+      page_size: limit,
+      current: currentPage,
+      driver_code,
+      status,
+      name,
+    });
+
+    res.json(driverSalaries);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .send({ error: `Error get driver salary list :${error.message} ` });
+  }
 }
 
 export { GetDriverSalaryList };
