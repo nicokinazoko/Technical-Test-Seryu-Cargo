@@ -50,6 +50,8 @@ async function GetAllDriverSalaries({
           total_shipment_cost_paid +
           totalAttendanceSalary;
 
+        if (totalSalary <= 0) continue;
+
         dataListDriverSalaries.push({
           driver_code: driver.driver_code,
           name: driver.name,
