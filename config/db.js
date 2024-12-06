@@ -1,10 +1,11 @@
+// import libraries
 import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env-dev' });
-
 import pg from 'pg';
 const { Pool } = pg;
 
+dotenv.config({ path: '.env-dev' });
+
+// create new pool using variable .env
 const pool = new Pool({
   user: process.env.PG_USER,
   host: process.env.PG_HOST,
@@ -13,6 +14,7 @@ const pool = new Pool({
   port: process.env.PG_PORT,
 });
 
+// check if pool query is valid, then display log message
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('Connection Error:', err);
@@ -21,4 +23,5 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
+// export pool
 export { pool };
